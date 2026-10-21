@@ -51,14 +51,15 @@ Vì ưu tiên chạy miễn phí trên máy cá nhân, kế hoạch theo hướn
 
 ## 2. Cấu trúc thư mục
 
-Phát triển trong `project-prototype/`, giữ lại những phần đã chạy được và tổ chức lại dần.
+Thư mục gốc của toàn bộ dự án là `video-factory/`.
 
 ```
-project-prototype/           ← thư mục làm việc chính
+video-factory/               ← thư mục gốc dự án
 │
 ├── main.py                  # Điểm chạy chính của hệ thống
 ├── config.py                # Cấu hình chung
 ├── style.py                 # ✅ Phong cách video (đã có)
+├── references/              # ✅ Tài liệu API & chỉ dẫn AI (đã có)
 │
 ├── core/
 │   ├── project_manager.py   # Quản lý từng video

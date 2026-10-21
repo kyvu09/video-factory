@@ -75,7 +75,7 @@ Bản hướng dẫn dưới đây dùng lệnh theo **ManimCE** để minh họ
 Tạo một thư mục riêng để tránh ảnh hưởng các dự án hiện tại:
 
 ```text
-coding-video-factory/
+video-factory/
 ├── projects/
 │   └── binary_search/
 │       ├── scene.py
@@ -143,12 +143,8 @@ Nếu lệnh nào báo không tìm thấy, công cụ đó chưa được cài h
 Ví dụ dùng ổ C:
 
 ```powershell
-mkdir C:\personal_kyvu\CODE\coding-video-factory
-cd C:\personal_kyvu\CODE\coding-video-factory
-
-mkdir projects
-mkdir projects\binary_search
-mkdir projects\binary_search\output
+mkdir C:\personal_kyvu\CODE\video-factory
+cd C:\personal_kyvu\CODE\video-factory
 ```
 
 Bạn có thể thay đường dẫn theo vị trí lưu code hiện tại.
@@ -264,7 +260,7 @@ Nếu font hoặc ký tự tiếng Việt hiển thị không đúng, hãy kiể
 
 ## 5. Render video
 
-Từ thư mục gốc `coding-video-factory`, kích hoạt môi trường ảo nếu chưa kích hoạt:
+Từ thư mục gốc `video-factory`, kích hoạt môi trường ảo nếu chưa kích hoạt:
 
 ```powershell
 .\.venv\Scripts\Activate.ps1

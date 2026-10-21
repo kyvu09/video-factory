@@ -1,10 +1,11 @@
 [project]
-name = "project-prototype"
+name = "video-factory"
 version = "0.1.0"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "manimgl>=1.7.2",
     "numpy>=1.24",
+    "av",
 ]
 
 [tool.uv]

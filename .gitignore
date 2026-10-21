@@ -36,5 +36,5 @@ mfput.log
 .DS_Store
 Thumbs.db
 
-# Manim coding skill (repo clone — chỉ dùng làm tham khảo)
-project-prototype/manim-clone-github/
+# Manim clone
+manim-clone-github/
