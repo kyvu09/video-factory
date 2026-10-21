@@ -15,7 +15,7 @@ env/
 
 # ManimGL / Manim output
 media/
-videos/
+videos/*
 latex_cache/
 *.mp4
 *.mov
