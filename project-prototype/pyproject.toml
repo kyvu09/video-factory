@@ -1,0 +1,14 @@
+[project]
+name = "project-prototype"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "manimgl>=1.7.2",
+    "numpy>=1.24",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+manimgl = { path = "manim-clone-github", editable = true }

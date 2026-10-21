@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# uv
+.uv/
+
+# ManimGL / Manim output
+media/
+videos/
+latex_cache/
+*.mp4
+*.mov
+*.avi
+*.log
+*.aux
+*.dvi
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+mfput.log
+
+# IDE / Editor
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Manim coding skill (repo clone — chỉ dùng làm tham khảo)
+project-prototype/manim-clone-github/
