@@ -36,5 +36,7 @@ mfput.log
 .DS_Store
 Thumbs.db
 
-# Manim clone
-manim-clone-github/
+# Build artifacts
+dist/
+build/
+*.egg-info/

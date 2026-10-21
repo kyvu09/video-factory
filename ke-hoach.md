@@ -56,6 +56,7 @@ Thư mục gốc của toàn bộ dự án là `video-factory/`.
 ```
 video-factory/               ← thư mục gốc dự án
 │
+├── manimlib/                # ⚡ Lõi engine đồ họa ManimGL (đã tích hợp trực tiếp)
 ├── main.py                  # Điểm chạy chính của hệ thống
 ├── config.py                # Cấu hình chung
 ├── style.py                 # ✅ Phong cách video (đã có)

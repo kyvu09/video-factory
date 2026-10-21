@@ -254,75 +254,6 @@ wheels = [
 ]
 
 [[package]]
-name = "manimgl"
-version = "1.7.2"
-source = { editable = "manim-clone-github" }
-dependencies = [
-    { name = "addict" },
-    { name = "appdirs" },
-    { name = "colour" },
-    { name = "diskcache" },
-    { name = "fonttools" },
-    { name = "glfw" },
-    { name = "ipython" },
-    { name = "isosurfaces" },
-    { name = "manimpango" },
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "pydub" },
-    { name = "pygments" },
-    { name = "pyperclip" },
-    { name = "pywavefront" },
-    { name = "pyyaml" },
-    { name = "rendercanvas" },
-    { name = "rich" },
-    { name = "scipy" },
-    { name = "setuptools" },
-    { name = "skia-pathops" },
-    { name = "svgelements" },
-    { name = "sympy" },
-    { name = "tqdm" },
-    { name = "trimesh" },
-    { name = "validators" },
-    { name = "wgpu" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "addict" },
-    { name = "appdirs" },
-    { name = "audioop-lts", marker = "python_full_version >= '3.13'" },
-    { name = "colour" },
-    { name = "diskcache" },
-    { name = "fonttools" },
-    { name = "glfw" },
-    { name = "ipython", specifier = ">=8.18.0" },
-    { name = "isosurfaces" },
-    { name = "manimpango", specifier = ">=0.6.0" },
-    { name = "matplotlib" },
-    { name = "numpy" },
-    { name = "pillow" },
-    { name = "pydub" },
-    { name = "pygments" },
-    { name = "pyperclip" },
-    { name = "pywavefront" },
-    { name = "pyyaml" },
-    { name = "rendercanvas" },
-    { name = "rich" },
-    { name = "scipy" },
-    { name = "setuptools" },
-    { name = "skia-pathops" },
-    { name = "svgelements", specifier = ">=1.8.1" },
-    { name = "sympy" },
-    { name = "tqdm" },
-    { name = "trimesh" },
-    { name = "typing-extensions", marker = "python_full_version < '3.11'" },
-    { name = "validators" },
-    { name = "wgpu" },
-]
-
-[[package]]
 name = "manimpango"
 version = "0.7.0"
 source = { registry = "https://pypi.org/simple" }
@@ -770,18 +701,70 @@ wheels = [
 [[package]]
 name = "video-factory"
 version = "0.1.0"
-source = { virtual = "." }
+source = { editable = "." }
 dependencies = [
+    { name = "addict" },
+    { name = "appdirs" },
     { name = "av" },
-    { name = "manimgl" },
+    { name = "colour" },
+    { name = "diskcache" },
+    { name = "fonttools" },
+    { name = "glfw" },
+    { name = "ipython" },
+    { name = "isosurfaces" },
+    { name = "manimpango" },
+    { name = "matplotlib" },
     { name = "numpy" },
+    { name = "pillow" },
+    { name = "pydub" },
+    { name = "pygments" },
+    { name = "pyperclip" },
+    { name = "pywavefront" },
+    { name = "pyyaml" },
+    { name = "rendercanvas" },
+    { name = "rich" },
+    { name = "scipy" },
+    { name = "setuptools" },
+    { name = "skia-pathops" },
+    { name = "svgelements" },
+    { name = "sympy" },
+    { name = "tqdm" },
+    { name = "trimesh" },
+    { name = "validators" },
+    { name = "wgpu" },
 ]
 
 [package.metadata]
 requires-dist = [
+    { name = "addict" },
+    { name = "appdirs" },
     { name = "av" },
-    { name = "manimgl", editable = "manim-clone-github" },
-    { name = "numpy", specifier = ">=1.24" },
+    { name = "colour" },
+    { name = "diskcache" },
+    { name = "fonttools" },
+    { name = "glfw" },
+    { name = "ipython", specifier = ">=8.18.0" },
+    { name = "isosurfaces" },
+    { name = "manimpango", specifier = ">=0.6.0" },
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pillow" },
+    { name = "pydub" },
+    { name = "pygments" },
+    { name = "pyperclip" },
+    { name = "pywavefront" },
+    { name = "pyyaml" },
+    { name = "rendercanvas" },
+    { name = "rich" },
+    { name = "scipy" },
+    { name = "setuptools" },
+    { name = "skia-pathops" },
+    { name = "svgelements", specifier = ">=1.8.1" },
+    { name = "sympy" },
+    { name = "tqdm" },
+    { name = "trimesh" },
+    { name = "validators" },
+    { name = "wgpu" },
 ]
 
 [[package]]

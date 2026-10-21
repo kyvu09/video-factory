@@ -32,6 +32,7 @@ Hệ thống sản xuất video hoạt ảnh giáo dục tự động (Toán h�
 
 ```text
 video-factory/
+├── manimlib/                   # ⚡ Lõi engine đồ họa ManimGL (đã tích hợp trực tiếp)
 ├── components/                 # Các khối linh kiện tái sử dụng
 │   ├── characters.py           # Nhân vật giáo viên StickmanTeacher
 │   └── geometry.py             # Ký hiệu hình học, góc vuông RightAngle
