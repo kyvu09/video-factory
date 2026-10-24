@@ -234,11 +234,19 @@ class Animation(object):
         return self.remover
 
 
-def prepare_animation(anim: Animation | _AnimationBuilder):
+def prepare_animation(anim: Animation | _AnimationBuilder | None):
+    if anim is None:
+        return None
+
     if isinstance(anim, _AnimationBuilder):
         return anim.build()
 
     if isinstance(anim, Animation):
         return anim
+
+    from manimlib.mobject.mobject import Mobject
+    if isinstance(anim, Mobject):
+        from manimlib.animation.creation import ShowCreation
+        return ShowCreation(anim)
 
     raise TypeError(f"Object {anim} cannot be converted to an animation")

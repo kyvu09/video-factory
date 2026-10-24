@@ -48,6 +48,7 @@ class CameraFrame(Mobject):
         self.uniforms["orientation"] = Rotation.identity().as_quat()
         self.uniforms["fovy"] = fovy
 
+        self.default_frame_shape = tuple(map(float, frame_shape))
         self.default_orientation = Rotation.identity()
         self.view_matrix = np.identity(4)
         self.id4x4 = np.identity(4)
@@ -70,7 +71,7 @@ class CameraFrame(Mobject):
         return self
 
     def to_default_state(self):
-        self.set_shape(*FRAME_SHAPE)
+        self.set_shape(*getattr(self, 'default_frame_shape', FRAME_SHAPE))
         self.center()
         self.set_orientation(self.default_orientation)
         return self
@@ -102,7 +103,7 @@ class CameraFrame(Mobject):
         return self.get_euler_angles()[2]
 
     def get_scale(self):
-        return self.get_height() / FRAME_SHAPE[1]
+        return self.get_height() / getattr(self, 'default_frame_shape', FRAME_SHAPE)[1]
 
     def get_inverse_camera_rotation_matrix(self):
         return self.get_orientation().as_matrix().T

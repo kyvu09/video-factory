@@ -100,7 +100,7 @@ self.play(ShowCreation(shape_or_curve), run_time=1.2)        # Vẽ nét cho Lin
 self.play(GrowArrow(arrow), run_time=0.65)                   # BẮT BUỘC dùng GrowArrow cho Arrow (KHÔNG dùng ShowCreation trên Arrow!)
 self.play(Write(tex_obj), run_time=1.1)                      # Viết công thức Toán
 self.play(FadeIn(obj, shift=UP * 0.2, scale=0.95), run_time=0.75)
-self.play(GrowFromCenter(card, rate_func=overshoot), run_time=0.6)  # Hiệu ứng nảy đàn hồi (hoặc gọi self.pop_in(card))
+self.pop_in(card, run_time=0.6)                              # Gọi trực tiếp method nảy đàn hồi (KHÔNG bọc trong self.play!)
 self.play(DrawBorderThenFill(shape), run_time=1.2)
 self.add(obj)                                                # Thêm tức thì không qua animation
 ```
@@ -108,7 +108,7 @@ self.add(obj)                                                # Thêm tức thì 
 ### Data Flow, Path Motion & Smooth Text Morph
 ```python
 # 1. Luồng dữ liệu bay từ nguồn tới đích (giữ nguyên nguồn, tạo đích tại chỗ):
-self.play(TransformFromCopy(src_mob, dst_mob, path_arc=-0.45), run_time=0.85)  # hoặc self.flow_to(src_mob, dst_mob)
+self.flow_to(src_mob, dst_mob, path_arc=-0.45)              # Bắn hạt sáng sang ô mới (gọi trực tiếp, KHÔNG bọc trong self.play!)
 
 # 2. Đổi chữ / cập nhật giá trị trong ô MƯỢT MÀ (TUYỆT ĐỐI KHÔNG dùng Transform trên Text vì gây rách nét chữ!):
 new_val.move_to(old_val)  # hoặc self.fit_text_in(new_val, slot_box)

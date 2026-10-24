@@ -579,10 +579,13 @@ class Scene(object):
         rate_func: Callable[[float], float] | None = None,
         lag_ratio: float | None = None,
     ) -> None:
-        if len(proto_animations) == 0:
-            log.warning("Called Scene.play with no animations")
+        valid_proto = [a for a in proto_animations if a is not None]
+        if len(valid_proto) == 0:
             return
-        animations = list(map(prepare_animation, proto_animations))
+        animations = [prepare_animation(anim) for anim in valid_proto]
+        animations = [a for a in animations if a is not None]
+        if len(animations) == 0:
+            return
         for anim in animations:
             anim.update_rate_info(run_time, rate_func, lag_ratio)
         self.pre_play()

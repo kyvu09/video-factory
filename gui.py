@@ -31,9 +31,9 @@ from core.ai_pipeline import slug_to_scene_class, slugify_topic
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 GEMINI_MODELS = [
+    "gemini-3.8-flash",
     "gemini-2.5-flash",
     "gemini-2.5-pro",
-    "gemini-2.0-flash",
 ]
 
 DURATION_OPTIONS = [
@@ -49,12 +49,26 @@ STYLE_OPTIONS = [
     ("Bảng trắng + Thầy giáo Stickman", "teacher_light"),
 ]
 
-RESOLUTION_OPTIONS = [
-    ("480p Nhanh (-l)", "-l"),
-    ("720p HD (-m)", "-m"),
-    ("1080p Full HD (--hd)", "--hd"),
-    ("4K UHD (--uhd)", "--uhd"),
+ASPECT_RATIO_OPTIONS = [
+    ("16:9 Ngang (YouTube / Khung rộng)", "16:9"),
+    ("9:16 Dọc (Shorts / TikTok / Reels)", "9:16"),
 ]
+
+RESOLUTION_OPTIONS_16_9 = [
+    ("480p Nhanh (854x480, -l)", "-l"),
+    ("720p HD (1280x720, -m)", "-m"),
+    ("1080p Full HD (1920x1080, --hd)", "--hd"),
+    ("4K UHD (3840x2160, --uhd)", "--uhd"),
+]
+
+RESOLUTION_OPTIONS_9_16 = [
+    ("480p Nhanh (480x854, -l)", "-l"),
+    ("720p HD (720x1280, -m)", "-m"),
+    ("1080p Full HD (1080x1920, --hd)", "--hd"),
+    ("4K UHD (2160x3840, --uhd)", "--uhd"),
+]
+
+RESOLUTION_OPTIONS = RESOLUTION_OPTIONS_16_9
 
 
 class ManimGLApp:
@@ -232,7 +246,7 @@ class ManimGLApp:
         self.btn_toggle_key.pack(side=tk.LEFT, padx=(0, 12))
 
         ttk.Label(cfg_row, text="Model:").pack(side=tk.LEFT)
-        self.model_var = tk.StringVar(value=self.ai_cfg.get("model", "gemini-2.5-flash"))
+        self.model_var = tk.StringVar(value=self.ai_cfg.get("model", "gemini-3.8-flash"))
         self.model_combo = ttk.Combobox(cfg_row, textvariable=self.model_var, values=GEMINI_MODELS, width=20)
         self.model_combo.pack(side=tk.LEFT, padx=(6, 8))
 
@@ -252,25 +266,44 @@ class ManimGLApp:
         opt1_row = ttk.Frame(step1_frame)
         opt1_row.pack(fill=tk.X)
 
-        ttk.Label(opt1_row, text="Thời lượng:", width=16).pack(side=tk.LEFT)
+        ttk.Label(opt1_row, text="Thời lượng:").pack(side=tk.LEFT, padx=(0, 4))
         self.duration_label_var = tk.StringVar(value="45 giây")
         self.duration_combo = ttk.Combobox(
             opt1_row,
             textvariable=self.duration_label_var,
             values=[lbl for lbl, _ in DURATION_OPTIONS],
             state="readonly",
-            width=18,
+            width=12,
         )
-        self.duration_combo.pack(side=tk.LEFT, padx=(0, 14))
+        self.duration_combo.pack(side=tk.LEFT, padx=(0, 10))
 
-        ttk.Label(opt1_row, text="Phong cách:").pack(side=tk.LEFT, padx=(0, 6))
+        ttk.Label(opt1_row, text="Tỷ lệ:").pack(side=tk.LEFT, padx=(0, 4))
+        saved_ar = self.ai_cfg.get("default_aspect_ratio", "16:9")
+        default_ar_lbl = ASPECT_RATIO_OPTIONS[0][0]
+        for ar_lbl, ar_val in ASPECT_RATIO_OPTIONS:
+            if ar_val == saved_ar:
+                default_ar_lbl = ar_lbl
+                break
+
+        self.ai_aspect_ratio_var = tk.StringVar(value=default_ar_lbl)
+        self.ai_aspect_ratio_combo = ttk.Combobox(
+            opt1_row,
+            textvariable=self.ai_aspect_ratio_var,
+            values=[lbl for lbl, _ in ASPECT_RATIO_OPTIONS],
+            state="readonly",
+            width=26,
+        )
+        self.ai_aspect_ratio_combo.pack(side=tk.LEFT, padx=(0, 10))
+        self.ai_aspect_ratio_combo.bind("<<ComboboxSelected>>", self._on_ai_aspect_ratio_changed)
+
+        ttk.Label(opt1_row, text="Phong cách:").pack(side=tk.LEFT, padx=(0, 4))
         self.style_label_var = tk.StringVar(value=STYLE_OPTIONS[0][0])
         self.style_combo = ttk.Combobox(
             opt1_row,
             textvariable=self.style_label_var,
             values=[lbl for lbl, _ in STYLE_OPTIONS],
             state="readonly",
-            width=30,
+            width=26,
         )
         self.style_combo.pack(side=tk.LEFT, padx=(0, 10))
 
@@ -467,20 +500,42 @@ class ManimGLApp:
 
         ttk.Button(scene_row, text="Tải lại Scene", command=self._update_scenes).pack(side=tk.RIGHT)
 
-        res_frame = ttk.LabelFrame(main_frame, text="2. Tùy chọn Độ Phân Giải (Resolution)")
+        res_frame = ttk.LabelFrame(main_frame, text="2. Tùy chọn Tỷ Lệ & Độ Phân Giải (Aspect Ratio & Resolution)")
         res_frame.pack(fill=tk.X, pady=(0, 10))
 
+        ar_row = ttk.Frame(res_frame)
+        ar_row.pack(fill=tk.X, pady=(0, 6))
+        ttk.Label(ar_row, text="Tỷ lệ khung hình:").pack(side=tk.LEFT, padx=(0, 8))
+        self.manual_aspect_ratio_var = tk.StringVar(value="16:9")
+        ttk.Radiobutton(
+            ar_row,
+            text="16:9 Ngang (YouTube)",
+            variable=self.manual_aspect_ratio_var,
+            value="16:9",
+            command=self._update_manual_res_labels,
+        ).pack(side=tk.LEFT, padx=(0, 12))
+        ttk.Radiobutton(
+            ar_row,
+            text="9:16 Dọc (Shorts / TikTok / Reels)",
+            variable=self.manual_aspect_ratio_var,
+            value="9:16",
+            command=self._update_manual_res_labels,
+        ).pack(side=tk.LEFT)
+
         self.res_var = tk.StringVar(value="-l")
+        self.manual_radio_widgets = []
         resolutions = [
-            ("-l", "480p (854x480, 15fps)", "Render cực nhanh, thích hợp xem thử"),
-            ("-m", "720p (1280x720, 30fps)", "Chất lượng chuẩn HD vừa phải"),
-            ("--hd", "1080p (1920x1080, 60fps)", "Full HD sắc nét, khuyên dùng cho video chính"),
-            ("--uhd", "4K UHD (3840x2160, 60fps)", "Chất lượng cao nhất, render lâu hơn"),
+            ("-l", "480p (854x480, 15fps)", "480p (480x854, 15fps)", "Render cực nhanh, thích hợp xem thử"),
+            ("-m", "720p (1280x720, 30fps)", "720p (720x1280, 30fps)", "Chất lượng chuẩn HD vừa phải"),
+            ("--hd", "1080p (1920x1080, 60fps)", "1080p (1080x1920, 60fps)", "Full HD sắc nét, khuyên dùng cho video chính"),
+            ("--uhd", "4K UHD (3840x2160, 60fps)", "4K UHD (2160x3840, 60fps)", "Chất lượng cao nhất, render lâu hơn"),
         ]
-        for val, label_text, note in resolutions:
+        for val, lbl_16_9, lbl_9_16, note in resolutions:
             row = ttk.Frame(res_frame)
             row.pack(fill=tk.X, pady=2)
-            ttk.Radiobutton(row, text=label_text, variable=self.res_var, value=val).pack(side=tk.LEFT)
+            rb = ttk.Radiobutton(row, text=lbl_16_9, variable=self.res_var, value=val)
+            rb.pack(side=tk.LEFT)
+            self.manual_radio_widgets.append((rb, lbl_16_9, lbl_9_16))
             ttk.Label(row, text=f"— {note}", foreground="#64748b", font=self.font_sub).pack(side=tk.LEFT, padx=8)
 
         opt_frame = ttk.LabelFrame(main_frame, text="3. Tùy chọn xuất file")
@@ -548,6 +603,33 @@ class ManimGLApp:
         self.api_key_entry.config(show="" if self._show_key else "•")
         self.btn_toggle_key.config(text="Ẩn" if self._show_key else "Hiện")
 
+    def _get_selected_ai_aspect_ratio(self) -> str:
+        lbl = self.ai_aspect_ratio_var.get()
+        for k, v in ASPECT_RATIO_OPTIONS:
+            if k == lbl:
+                return v
+        return "16:9"
+
+    def _on_ai_aspect_ratio_changed(self, event=None):
+        ar = self._get_selected_ai_aspect_ratio()
+        res_list = RESOLUTION_OPTIONS_9_16 if ar == "9:16" else RESOLUTION_OPTIONS_16_9
+        self.ai_res_combo["values"] = [lbl for lbl, _ in res_list]
+        cur_flag = self._get_selected_ai_res_flag()
+        for lbl, flag in res_list:
+            if flag == cur_flag:
+                self.ai_res_label_var.set(lbl)
+                break
+        else:
+            self.ai_res_label_var.set(res_list[0][0])
+        if getattr(self, "manual_aspect_ratio_var", None):
+            self.manual_aspect_ratio_var.set(ar)
+            self._update_manual_res_labels()
+
+    def _update_manual_res_labels(self):
+        is_vert = self.manual_aspect_ratio_var.get() == "9:16"
+        for rb, lbl_16_9, lbl_9_16 in getattr(self, "manual_radio_widgets", []):
+            rb.config(text=lbl_9_16 if is_vert else lbl_16_9)
+
     def _get_selected_duration(self) -> int:
         lbl = self.duration_label_var.get()
         for k, v in DURATION_OPTIONS:
@@ -587,9 +669,10 @@ class ManimGLApp:
         save_ai_config(
             {
                 "api_key": self.api_key_var.get().strip(),
-                "model": self.model_var.get().strip() or "gemini-2.5-flash",
+                "model": self.model_var.get().strip() or "gemini-3.8-flash",
                 "default_duration": self._get_selected_duration(),
                 "default_style": self._get_selected_style_mode(),
+                "default_aspect_ratio": self._get_selected_ai_aspect_ratio(),
                 "default_resolution": self._get_selected_ai_res_flag(),
                 "tts_enabled": bool(self.tts_enabled_var.get()),
                 "tts_voice": self._get_selected_tts_voice(),
@@ -638,7 +721,7 @@ class ManimGLApp:
     # ------------------------------------------------------------------
     def _create_pipeline(self) -> AIPipeline | None:
         api_key = self.api_key_var.get().strip()
-        model = self.model_var.get().strip() or "gemini-2.5-flash"
+        model = self.model_var.get().strip() or "gemini-3.8-flash"
         if not api_key:
             messagebox.showwarning(
                 "Thiếu Gemini API Key",
@@ -672,10 +755,12 @@ class ManimGLApp:
 
         def worker():
             try:
+                aspect_ratio = self._get_selected_ai_aspect_ratio()
                 plan_session = pipeline.generate_plan(
                     topic=topic,
                     duration_sec=detected_dur,
                     style_mode=style_mode,
+                    aspect_ratio=aspect_ratio,
                     on_log=self._log,
                 )
                 self._add_tokens(plan_session.gemini_result.total_tokens)
@@ -745,12 +830,18 @@ class ManimGLApp:
 
         def worker():
             try:
+                aspect_ratio = (
+                    self.current_plan_session.aspect_ratio
+                    if self.current_plan_session
+                    else self._get_selected_ai_aspect_ratio()
+                )
                 code_session = pipeline.generate_code_from_approved_script(
                     approved_script_text=approved_text,
                     slug=slug,
                     scene_class_name=scene_class_name,
                     duration_sec=duration_sec,
                     style_mode=style_mode,
+                    aspect_ratio=aspect_ratio,
                     auto_fix_layout=self.ai_autofix_var.get(),
                     max_layout_retries=4 if self.ai_autofix_var.get() else 0,
                     tts_enabled=tts_enabled,
@@ -778,6 +869,7 @@ class ManimGLApp:
                 ok, out_path = pipeline.render_with_self_healing(
                     code_session=code_session,
                     resolution_flag=res_flag,
+                    aspect_ratio=aspect_ratio,
                     open_after=open_after,
                     max_fix_retries=max_retries,
                     tts_enabled=tts_enabled,
@@ -991,6 +1083,10 @@ class ManimGLApp:
             return None
 
         cmd = [sys.executable, "-m", "manimlib", script_file, scene_name]
+
+        is_vert = getattr(self, "manual_aspect_ratio_var", None) and self.manual_aspect_ratio_var.get() == "9:16"
+        if is_vert:
+            cmd.append("--vertical")
 
         if not is_preview:
             cmd.append("-w")

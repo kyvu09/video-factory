@@ -172,6 +172,11 @@ def parse_cli():
             help="Resolution, passed as \"WxH\", e.g. \"1920x1080\"",
         )
         parser.add_argument(
+            "--vertical", "--shorts",
+            action="store_true",
+            help="Render in 9:16 vertical format (Shorts, TikTok, Reels)",
+        )
+        parser.add_argument(
             "--fps",
             help="Frame rate, as an integer",
             type=int,
@@ -348,16 +353,19 @@ def get_manim_dir():
 
 
 def get_resolution_from_args(args: Optional[Namespace], resolution_options: dict) -> Optional[tuple[int, int]]:
-    if args.resolution:
+    is_vertical = getattr(args, "vertical", False) if args else False
+    if args and args.resolution:
         return tuple(map(int, args.resolution.split("x")))
-    if args.low_quality:
-        return literal_eval(resolution_options["low"])
-    if args.medium_quality:
-        return literal_eval(resolution_options["med"])
-    if args.hd:
-        return literal_eval(resolution_options["high"])
-    if args.uhd:
-        return literal_eval(resolution_options["4k"])
+    if args and args.low_quality:
+        return (480, 854) if is_vertical else literal_eval(resolution_options["low"])
+    if args and args.medium_quality:
+        return (720, 1280) if is_vertical else literal_eval(resolution_options["med"])
+    if args and args.hd:
+        return (1080, 1920) if is_vertical else literal_eval(resolution_options["high"])
+    if args and args.uhd:
+        return (2160, 3840) if is_vertical else literal_eval(resolution_options["4k"])
+    if is_vertical:
+        return (1080, 1920)
     return None
 
 

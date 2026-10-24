@@ -45,7 +45,7 @@ _TRANSIENT_MARKERS = (
 _FALLBACK_MODELS = (
     "gemini-3.8-flash",
     "gemini-3.7-flash",
-    "gemini-3.6-flash",
+    "gemini-2.5-flash",
 )
 
 
@@ -55,9 +55,11 @@ def _is_transient_error(msg: str) -> bool:
 
 
 class GeminiService:
-    def __init__(self, api_key: str, model: str = "gemini-2.5-flash"):
+    def __init__(self, api_key: str, model: str = "gemini-3.8-flash"):
         self.api_key = (api_key or "").strip()
-        self.model = (model or "gemini-2.5-flash").strip()
+        self.model = (model or "gemini-3.8-flash").strip()
+        if self.model == "gemini-2.0-flash":
+            self.model = "gemini-3.8-flash"
         if not self.api_key:
             raise GeminiAPIError(
                 "Chưa có Gemini API Key! Vui lòng nhập API Key ở khung Cấu hình Gemini."

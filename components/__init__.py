@@ -1,4 +1,4 @@
 from .characters import StickmanTeacher
-from .geometry import RightAngle
+from .geometry import RightAngle, PythagorasFigure
 
-__all__ = ["StickmanTeacher", "RightAngle"]
+__all__ = ["StickmanTeacher", "RightAngle", "PythagorasFigure"]

@@ -36,7 +36,7 @@ class AnimationGroup(Animation):
         **kwargs
     ):
         animations = args[0] if isinstance(args[0], Iterable) else args
-        self.animations = [prepare_animation(anim) for anim in animations]
+        self.animations = [a for a in (prepare_animation(anim) for anim in animations) if a is not None]
         self.build_animations_with_timings(lag_ratio)
         self.max_end_time = max((awt[2] for awt in self.anims_with_timings), default=0)
         self.run_time = self.max_end_time if run_time is None else run_time

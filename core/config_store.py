@@ -15,9 +15,10 @@ ENV_PATH = BASE_DIR / ".env"
 
 DEFAULT_AI_CONFIG: dict[str, Any] = {
     "api_key": "",
-    "model": "gemini-2.5-flash",
+    "model": "gemini-3.8-flash",
     "default_duration": 45,
     "default_style": "channel_dark",
+    "default_aspect_ratio": "16:9",
     "default_resolution": "-l",
     "max_fix_retries": 3,
     "tts_enabled": True,
@@ -55,12 +56,17 @@ def load_ai_config() -> dict[str, Any]:
             pass
     if not cfg.get("api_key"):
         cfg["api_key"] = _read_env_api_key()
+    # Gemini 2.0 Flash was shut down; upgrade saved local configs on load.
+    if cfg.get("model") == "gemini-2.0-flash":
+        cfg["model"] = "gemini-3.8-flash"
     return cfg
 
 
 def save_ai_config(updates: dict[str, Any]) -> dict[str, Any]:
     cfg = load_ai_config()
     cfg.update(updates)
+    if cfg.get("model") == "gemini-2.0-flash":
+        cfg["model"] = "gemini-3.8-flash"
     try:
         CONFIG_PATH.write_text(
             json.dumps(cfg, ensure_ascii=False, indent=2),

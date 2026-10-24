@@ -107,3 +107,96 @@ def exponential_decay(t: float, half_life: float = 0.1) -> float:
     # The half-life should be rather small to minimize
     # the cut-off error at the end
     return 1 - np.exp(-t / half_life)
+
+# ------------------------------------------------------------------
+# Standard Easing Functions (Tương thích chuẩn ManimCE & Web Easing)
+# ------------------------------------------------------------------
+
+def ease_in_sine(t: float) -> float:
+    return float(1.0 - np.cos((t * np.pi) / 2.0))
+
+
+def ease_out_sine(t: float) -> float:
+    return float(np.sin((t * np.pi) / 2.0))
+
+
+def ease_in_out_sine(t: float) -> float:
+    return float(-(np.cos(np.pi * t) - 1.0) / 2.0)
+
+
+easeInSine = ease_in_sine
+easeOutSine = ease_out_sine
+easeInOutSine = ease_in_out_sine
+
+
+def ease_in_quad(t: float) -> float:
+    return float(t * t)
+
+
+def ease_out_quad(t: float) -> float:
+    return float(1.0 - (1.0 - t) * (1.0 - t))
+
+
+def ease_in_out_quad(t: float) -> float:
+    return float(2.0 * t * t if t < 0.5 else 1.0 - (-2.0 * t + 2.0) ** 2 / 2.0)
+
+
+easeInQuad = ease_in_quad
+easeOutQuad = ease_out_quad
+easeInOutQuad = ease_in_out_quad
+
+
+def ease_in_cubic(t: float) -> float:
+    return float(t * t * t)
+
+
+def ease_out_cubic(t: float) -> float:
+    return float(1.0 - (1.0 - t) ** 3)
+
+
+def ease_in_out_cubic(t: float) -> float:
+    return float(4.0 * t * t * t if t < 0.5 else 1.0 - (-2.0 * t + 2.0) ** 3 / 2.0)
+
+
+easeInCubic = ease_in_cubic
+easeOutCubic = ease_out_cubic
+easeInOutCubic = ease_in_out_cubic
+
+
+def ease_in_quart(t: float) -> float:
+    return float(t ** 4)
+
+
+def ease_out_quart(t: float) -> float:
+    return float(1.0 - (1.0 - t) ** 4)
+
+
+def ease_in_out_quart(t: float) -> float:
+    return float(8.0 * t ** 4 if t < 0.5 else 1.0 - (-2.0 * t + 2.0) ** 4 / 2.0)
+
+
+easeInQuart = ease_in_quart
+easeOutQuart = ease_out_quart
+easeInOutQuart = ease_in_out_quart
+
+
+def ease_in_expo(t: float) -> float:
+    return 0.0 if t == 0.0 else float(2.0 ** (10.0 * t - 10.0))
+
+
+def ease_out_expo(t: float) -> float:
+    return 1.0 if t == 1.0 else float(1.0 - 2.0 ** (-10.0 * t))
+
+
+def ease_in_out_expo(t: float) -> float:
+    if t == 0.0:
+        return 0.0
+    if t == 1.0:
+        return 1.0
+    return float(2.0 ** (20.0 * t - 10.0) / 2.0 if t < 0.5 else (2.0 - 2.0 ** (-20.0 * t + 10.0)) / 2.0)
+
+
+easeInExpo = ease_in_expo
+easeOutExpo = ease_out_expo
+easeInOutExpo = ease_in_out_expo
+

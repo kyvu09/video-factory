@@ -48,8 +48,12 @@ class AuditOutcome:
         bullet_list = "\n".join(f"  {i + 1}. {msg}" for i, msg in enumerate(self.layout_issues))
         guide = (
             "\n\nHƯỚNG DẪN CÁCH SỬA BẮT BUỘC:\n"
-            "- Với lỗi TRÀN LỀ MÀN HÌNH (`OFF_SCREEN`): Gom trọn cụm hình vào `VGroup` rồi gọi "
-            "`self.fit_in_center_zone(group)` hoặc `self.fit_in_left_zone(group)` / `self.fit_in_right_zone(group)`.\n"
+            "- Với lỗi TRÀN LỀ MÀN HÌNH (`OFF_SCREEN`): BẮT BUỘC định vị tương đối toàn bộ các hình con, "
+            "cạnh và nhãn vào đúng vị trí TRƯỚC, sau đó gom tất cả vào 1 VGroup duy nhất rồi mới gọi DUY NHẤT 1 LẦN "
+            "`self.assemble_and_fit(...)` hoặc `self.fit_in_left_zone(group)` / `self.fit_in_center_zone(group)`. "
+            "SAU KHI GỌI fit_in_*_zone, TUYỆT ĐỐI KHÔNG GỌI .next_to() HAY .move_to() LÀM PHÌNH TO CỤM HÌNH!\n"
+            "- Với lỗi HÌNH VẼ ĐÈ LÊN THẺ NỘI DUNG (`SHAPE_ON_CARD`): Đặt hình minh họa ở Cột Trái (`fit_in_left_zone`) "
+            "và các thẻ giải thích ở Cột Phải (`fit_in_right_zone`). TUYỆT ĐỐI KHÔNG dùng .move_to() kéo hình vẽ đè lên tâm thẻ chữ!\n"
             "- Với lỗi ĐÈ CHỮ LÊN CHỮ TẠI (0, 0) KHI ĐỔI CHỮ: Trước khi gọi `self.morph_text_anim(old_txt, new_txt)` hoặc `FadeTransform(old_txt, new_txt, stretch=False)`, "
             "BẮT BUỘC đặt vị trí cho `new_txt` bằng `self.fit_text_in(new_txt, slot_box)` hoặc `new_txt.move_to(old_txt)` (CẤM dùng `Transform` trên `Text` vì gây rách chữ!). "
             "Với cây đệ quy (recursion tree), hãy xếp từng tầng thành `level = VGroup(...).arrange(RIGHT, buff=0.6)` rồi xếp các tầng `VGroup(lv0, lv1, lv2).arrange(DOWN, buff=0.8)` để các nhánh con không bao giờ trùng tọa độ!\n"
@@ -123,7 +127,7 @@ def _segment_intersects_rect(
     return u1 <= u2
 
 
-def _run_audit_in_process(scene_file: str, scene_class_name: str) -> dict[str, Any]:
+def _run_audit_in_process(scene_file: str, scene_class_name: str, aspect_ratio: str = "16:9") -> dict[str, Any]:
     """Hàm chạy trực tiếp bên trong subprocess kiểm định."""
     from manimlib.module_loader import ModuleLoader
     from manimlib.mobject.coordinate_systems import CoordinateSystem
@@ -440,6 +444,7 @@ def _run_audit_in_process(scene_file: str, scene_class_name: str) -> dict[str, A
 
         text_items = [it for it in items if it["kind"] == "text"]
         shape_items = [it for it in items if it["kind"] == "shape"]
+        box_items = [s for s in shape_items if s["is_box"]]
 
         # 2. KIỂM TRA ĐÈ CHỮ LÊN CHỮ (TEXT_OVERLAP)
         for i in range(len(text_items)):
@@ -545,6 +550,28 @@ def _run_audit_in_process(scene_file: str, scene_class_name: str) -> dict[str, A
                             f"Hãy gọi `self.clear_stage()` xóa hình cũ hoặc dịch tách rời sang 2 cột Trái – Phải.",
                         )
 
+                # 3e. Hình vẽ hình học tự do (Square/Polygon/Circle) đè lên Thẻ/Hộp chữ
+                # Chỉ kích hoạt khi text `t` thuộc về một Thẻ/Hộp nội dung (có card/box bao quanh)
+                # và hình vẽ `s` là một vật thể độc lập khác đè lên thẻ đó.
+                card_box = None
+                for b in box_items:
+                    bx1, by1, bx2, by2 = b["bbox"]
+                    if bx1 <= tcx <= bx2 and by1 <= tcy <= by2:
+                        card_box = b
+                        break
+
+                if card_box and s["mob_id"] != card_box["mob_id"]:
+                    if not s["is_connector"] and s["fill_opacity"] >= 0.20:
+                        inter = _rect_intersection_area(t["bbox"], s["bbox"])
+                        if t_area > 1e-4 and (inter / t_area) > 0.30:
+                            sig = f"SHAPE_ON_CARD:{s['name']}:{t['name']}"
+                            record_issue(
+                                sig,
+                                f"{loc_prefix} HÌNH VẼ ĐÈ LÊN THẺ NỘI DUNG: `{s['name']}` đang đè trực tiếp lên thẻ `{t['name']}`! "
+                                f"Hãy đặt hình vẽ ở Cột Trái (`fit_in_left_zone`) và thẻ chữ ở Cột Phải (`fit_in_right_zone`), "
+                                f"TUYỆT ĐỐI không di chuyển hình học đè lên tâm thẻ chữ!",
+                            )
+
         # 4. KIỂM TRA MŨI TÊN ĐÂM XUYÊN QUA LÒNG KHUNG / Ô BẢNG KHÁC (ARROW_PIERCES_BOX)
         arrow_items = [s for s in shape_items if s["is_arrow"] and s["segments"]]
         box_items = [s for s in shape_items if s["is_box"]]
@@ -614,11 +641,14 @@ def _run_audit_in_process(scene_file: str, scene_class_name: str) -> dict[str, A
         return result
 
     Scene.play = audited_play  # type: ignore[assignment]
+    is_vertical = (aspect_ratio == "9:16") or ("vertical" in str(aspect_ratio).lower())
+    cam_res = (1080, 1920) if is_vertical else (1920, 1080)
     try:
         scene_instance = scene_cls(
             window=None,
             skip_animations=True,
             preview_while_skipping=False,
+            camera_config={"resolution": cam_res},
             file_writer_config={
                 "write_to_movie": False,
                 "save_last_frame": False,
@@ -657,6 +687,7 @@ def audit_scene_file(
     scene_path: str | Path,
     scene_class_name: str,
     timeout_sec: int = 90,
+    aspect_ratio: str = "16:9",
 ) -> AuditOutcome:
     """
     Chạy kiểm định nhanh `scene_path` trong một subprocess độc lập (không mở cửa sổ).
@@ -668,6 +699,7 @@ def audit_scene_file(
         "core.layout_auditor",
         str(scene_path),
         scene_class_name,
+        str(aspect_ratio),
     ]
     creation_flags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
     env = dict(os.environ)
@@ -713,9 +745,10 @@ def audit_scene_file(
 
 def _cli_main():
     if len(sys.argv) < 3:
-        print("Usage: python -m core.layout_auditor <scene_path> <SceneClassName>")
+        print("Usage: python -m core.layout_auditor <scene_path> <SceneClassName> [aspect_ratio]")
         sys.exit(2)
-    res = _run_audit_in_process(sys.argv[1], sys.argv[2])
+    aspect_ratio = sys.argv[3] if len(sys.argv) > 3 else "16:9"
+    res = _run_audit_in_process(sys.argv[1], sys.argv[2], aspect_ratio=aspect_ratio)
     print("===AUDIT_JSON===")
     print(json.dumps(res, ensure_ascii=True))
 

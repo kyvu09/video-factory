@@ -145,6 +145,13 @@ class Camera(object):
         self.init_light_source()
 
     def init_frame(self, **config) -> None:
+        pw, ph = self.default_pixel_shape
+        if pw > 0 and ph > 0:
+            if pw >= ph:
+                shape = (8.0 * (pw / ph), 8.0)
+            else:
+                shape = (8.0, 8.0 * (ph / pw))
+            config.setdefault('frame_shape', shape)
         self.frame = CameraFrame(**config)
 
     def init_renderer(self) -> None:
@@ -338,12 +345,14 @@ class Camera(object):
         written into the block they all share, see Gpu.
         """
         frame = self.frame
+        fw = frame.get_width()
+        fh = frame.get_height()
         self.gpu.frame_uniforms.update(
             view=frame.get_view_matrix().T.flatten(),
             frame_scale=frame.get_scale(),
             frame_rescale_factors=(
-                2.0 / FRAME_WIDTH,
-                2.0 / FRAME_HEIGHT,
+                2.0 / (fw if fw > 1e-4 else FRAME_WIDTH),
+                2.0 / (fh if fh > 1e-4 else FRAME_HEIGHT),
                 frame.get_scale() / frame.get_focal_distance(),
             ),
             pixel_size=self.get_pixel_size(),
