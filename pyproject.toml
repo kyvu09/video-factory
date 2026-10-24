@@ -16,6 +16,7 @@ dependencies = [
     "diskcache",
     "fontTools",
     "glfw",
+    "google-genai>=1.0.0",
     "ipython>=8.18.0",
     "isosurfaces",
     "manimpango>=0.6.0",
@@ -32,11 +33,13 @@ dependencies = [
     "scipy",
     "setuptools",
     "skia-pathops",
+    "soundfile",
     "svgelements>=1.8.1",
     "sympy",
     "tqdm",
     "trimesh",
     "validators",
+    "vieneu>=3.6.0",
     "wgpu",
 ]
 
@@ -44,9 +47,12 @@ dependencies = [
 manimgl = "manimlib.__main__:main"
 manim-render = "manimlib.__main__:main"
 
+[tool.setuptools]
+py-modules = ["style", "gui"]
+
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["manimlib*", "components*"]
+include = ["manimlib*", "components*", "core*"]
 
 [tool.setuptools.package-data]
 manimlib = ["*.yml", "shaders/**/*", "tex_templates.yml"]

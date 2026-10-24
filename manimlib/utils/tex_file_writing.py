@@ -103,12 +103,15 @@ def full_tex_to_svg(full_tex: str, compiler: str = "latex", message: str = ""):
     temp_dir = Path(manim_config.directories.latex_cache)
     temp_dir.mkdir(exist_ok=True)  # Create the directory if it does not already exist
 
-    # Define paths for the intermediate TeX and DVI files
-    tex_path = temp_dir / "working.tex"
+    # Define isolated paths per TeX hash so stale DVI files can never leak across formulas
+    stem = f"working_{hash_string(full_tex)}"
+    tex_path = temp_dir / f"{stem}.tex"
     dvi_path = tex_path.with_suffix(dvi_ext)
+    if dvi_path.exists():
+        dvi_path.unlink()
 
-    # Write tex file
-    tex_path.write_text(full_tex)
+    # Write tex file in UTF-8
+    tex_path.write_text(full_tex, encoding="utf-8")
 
     # Run latex compiler
     process = subprocess.run(
@@ -124,12 +127,12 @@ def full_tex_to_svg(full_tex: str, compiler: str = "latex", message: str = ""):
         text=True,
     )
 
-    if process.returncode != 0 and not dvi_path.exists():
+    if process.returncode != 0 or not dvi_path.exists():
         # Handle error
         error_str = ""
         log_path = tex_path.with_suffix(".log")
         if log_path.exists():
-            content = log_path.read_text()
+            content = log_path.read_text(encoding="utf-8", errors="replace")
             error_match = re.search(r"(?<=\n! ).*\n.*\n", content)
             if error_match:
                 error_str = error_match.group()

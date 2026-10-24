@@ -7,8 +7,8 @@ import numpy as np
 
 class StickmanTeacher(VGroup):
     """
-    Nhân vật thầy giáo hoạt hình dạng stickman (có kính, que chỉ bảng, vẫy tay).
-    Phù hợp cho các video bài giảng giáo dục, giải thích toán và lập trình.
+    Nhân vật thầy giáo hoạt hình dạng stickman (có kính, que chỉ bảng, vẫy tay, biểu cảm).
+    Phù hợp cho các video bài giảng giáo dục, giải thích toán và lập trình trên nền sáng.
     """
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -34,9 +34,9 @@ class StickmanTeacher(VGroup):
         self.eyes_group = VGroup(self.eye_l, self.eye_r)
 
         # Lông mày
-        self.brow_l = Arc(radius=0.14, start_angle=PI*0.15, angle=PI*0.7, stroke_width=2.8).set_color(BLACK)
+        self.brow_l = Arc(radius=0.14, start_angle=PI * 0.15, angle=PI * 0.7, stroke_width=2.8).set_color(BLACK)
         self.brow_l.next_to(self.glass_l, UP, buff=0.05)
-        self.brow_r = Arc(radius=0.14, start_angle=PI*0.15, angle=PI*0.7, stroke_width=2.8).set_color(BLACK)
+        self.brow_r = Arc(radius=0.14, start_angle=PI * 0.15, angle=PI * 0.7, stroke_width=2.8).set_color(BLACK)
         self.brow_r.next_to(self.glass_r, UP, buff=0.05)
         self.eyebrows_group = VGroup(self.brow_l, self.brow_r)
 
@@ -120,7 +120,7 @@ class StickmanTeacher(VGroup):
         return self._build_pointing_arm(target_pos)
 
     def create_wave_left_arm(self, phase=0):
-        """Tạo chuyển động vẫy tay trái chào người xem."""
+        """Tạo chuyển động vẫy tay trái chào người xem (phase=0 hoặc 1)."""
         s = self.shoulder_pos
         elbow = s + UP * 0.4 + LEFT * 0.35
         hand = elbow + (UP * 0.45 + LEFT * 0.15 if phase == 0 else UP * 0.45 + RIGHT * 0.2)
@@ -128,3 +128,56 @@ class StickmanTeacher(VGroup):
         fore = Line(elbow, hand, stroke_width=3.8).set_color(BLACK)
         palm = Dot(hand, radius=0.075).set_color(BLACK)
         return VGroup(upper, fore, palm)
+
+    def create_rest_left_arm(self):
+        """Đưa tay trái về tư thế thả lỏng ban đầu."""
+        hand_l_rest = self.shoulder_pos + DOWN * 0.85 + LEFT * 0.45
+        arm = Line(self.shoulder_pos, hand_l_rest, stroke_width=3.8).set_color(BLACK)
+        hand = Dot(hand_l_rest, radius=0.065).set_color(BLACK)
+        return VGroup(arm, hand)
+
+    def create_thumbs_up_left_arm(self):
+        """Tạo tư thế giơ ngón tay cái khích lệ."""
+        s = self.shoulder_pos
+        elbow = s + LEFT * 0.45 + DOWN * 0.1
+        hand = elbow + LEFT * 0.35 + UP * 0.4
+        upper = Line(s, elbow, stroke_width=3.8).set_color(BLACK)
+        fore = Line(elbow, hand, stroke_width=3.8).set_color(BLACK)
+        fist = Dot(hand, radius=0.09).set_color(BLACK)
+        thumb = Line(hand, hand + UP * 0.3, stroke_width=4.5).set_color(BLACK)
+        return VGroup(upper, fore, fist, thumb)
+
+    def create_surprised_head(self):
+        """Tạo biểu cảm khuôn mặt ngạc nhiên."""
+        head_c = self.head_center
+        head = Circle(radius=0.58).set_stroke(color=BLACK, width=4.0).set_fill(color=WHITE, opacity=1.0).move_to(head_c)
+        glasses = self.glasses_group.copy()
+        eye_l = Dot(self.glass_l.get_center(), radius=0.065).set_color(BLACK)
+        eye_r = Dot(self.glass_r.get_center(), radius=0.065).set_color(BLACK)
+        brow_l = Arc(radius=0.15, start_angle=PI * 0.1, angle=PI * 0.8, stroke_width=3.2).set_color(BLACK)
+        brow_l.next_to(self.glass_l, UP, buff=0.14)
+        brow_r = Arc(radius=0.15, start_angle=PI * 0.1, angle=PI * 0.8, stroke_width=3.2).set_color(BLACK)
+        brow_r.next_to(self.glass_r, UP, buff=0.14)
+        mouth = Ellipse(width=0.22, height=0.32, stroke_width=3.2).set_stroke(color=BLACK).set_fill(color="#334155", opacity=0.9).move_to(head_c + DOWN * 0.24)
+        return VGroup(head, glasses, VGroup(eye_l, eye_r), VGroup(brow_l, brow_r), mouth)
+
+    def create_smiling_head(self):
+        """Tạo biểu cảm khuôn mặt mỉm cười tươi."""
+        head_c = self.head_center
+        head = Circle(radius=0.58).set_stroke(color=BLACK, width=4.0).set_fill(color=WHITE, opacity=1.0).move_to(head_c)
+        glasses = self.glasses_group.copy()
+        eyes = VGroup(
+            Dot(self.glass_l.get_center(), radius=0.045).set_color(BLACK),
+            Dot(self.glass_r.get_center(), radius=0.045).set_color(BLACK),
+        )
+        brows = VGroup(
+            Arc(radius=0.14, start_angle=PI * 0.15, angle=PI * 0.7, stroke_width=2.8).set_color(BLACK).next_to(self.glass_l, UP, buff=0.05),
+            Arc(radius=0.14, start_angle=PI * 0.15, angle=PI * 0.7, stroke_width=2.8).set_color(BLACK).next_to(self.glass_r, UP, buff=0.05),
+        )
+        mouth = Arc(
+            radius=0.22,
+            start_angle=-PI * 0.88,
+            angle=PI * 0.76,
+            stroke_width=3.5,
+        ).set_color(BLACK).move_to(head_c + DOWN * 0.20)
+        return VGroup(head, glasses, eyes, brows, mouth)

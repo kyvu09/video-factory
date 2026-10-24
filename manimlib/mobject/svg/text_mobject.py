@@ -438,7 +438,7 @@ class Text(MarkupText):
 class Code(MarkupText):
     def __init__(
         self,
-        code: str,
+        code: str | None = None,
         font: str = "Consolas",
         font_size: int = 24,
         lsh: float = 1.0,
@@ -447,13 +447,29 @@ class Code(MarkupText):
         language: str = "python",
         # Visit https://pygments.org/demo/ to have a preview of more styles.
         code_style: str = "monokai",
+        code_string: str | None = None,
         **kwargs
     ):
+        from manimlib.mobject.types.vectorized_mobject import VGroup
+
+        raw_code = code if code is not None else (code_string or "")
+        if "style" in kwargs and code_style == "monokai":
+            code_style = kwargs.pop("style")
+        for ce_kw in (
+            "tab_width",
+            "background",
+            "insert_line_no",
+            "line_spacing",
+            "background_stroke_width",
+            "background_stroke_color",
+        ):
+            kwargs.pop(ce_kw, None)
+
         lexer = pygments.lexers.get_lexer_by_name(language)
         formatter = pygments.formatters.PangoMarkupFormatter(
             style=code_style
         )
-        markup = pygments.highlight(code, lexer, formatter)
+        markup = pygments.highlight(raw_code, lexer, formatter)
         markup = re.sub(r"</?tt>", "", markup)
         super().__init__(
             markup,
@@ -464,6 +480,16 @@ class Code(MarkupText):
             fill_color=fill_color,
             **kwargs
         )
+        line_groups = []
+        cursor = 0
+        total_submobs = len(self.submobjects)
+        for line_str in raw_code.splitlines():
+            n_chars = len(re.sub(r"\s", "", line_str))
+            end_idx = min(total_submobs, cursor + n_chars)
+            line_groups.append(VGroup(*self.submobjects[cursor:end_idx]))
+            cursor = end_idx
+        self.lines = VGroup(*line_groups)
+        self.code = self.lines
 
 
 @contextmanager

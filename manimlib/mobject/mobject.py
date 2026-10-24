@@ -527,8 +527,20 @@ class Mobject(object):
         h_buff_ratio: float = 0.5,
         v_buff_ratio: float = 0.5,
         aligned_edge: Vect3 = ORIGIN,
-        fill_rows_first: bool = True
+        fill_rows_first: bool = True,
+        rows: int | None = None,
+        cols: int | None = None,
+        grid_dims: tuple[int, int] | None = None,
     ) -> Self:
+        if grid_dims is not None:
+            if n_rows is None:
+                n_rows = grid_dims[0]
+            if n_cols is None and len(grid_dims) > 1:
+                n_cols = grid_dims[1]
+        if rows is not None and n_rows is None:
+            n_rows = rows
+        if cols is not None and n_cols is None:
+            n_cols = cols
         submobs = self.submobjects
         n_submobs = len(submobs)
         if n_rows is None:

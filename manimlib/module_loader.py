@@ -44,7 +44,7 @@ class ModuleLoader:
             # example, ``project-prototype/integral_tutorial.py``), while
             # the CLI may be launched from the repository root.  Resolve a
             # bare filename from that project directory as a fallback.
-            project_dir = Path(__file__).resolve().parents[2]
+            project_dir = Path(__file__).resolve().parents[1]
             project_file = project_dir / file_path
             if project_file.is_file():
                 file_path = project_file
@@ -58,6 +58,9 @@ class ModuleLoader:
 
         file_name = str(file_path)
         module_dir = str(file_path.parent)
+        repo_root = str(Path(__file__).resolve().parents[1])
+        if repo_root not in sys.path:
+            sys.path.insert(0, repo_root)
         if module_dir not in sys.path:
             sys.path.insert(0, module_dir)
 

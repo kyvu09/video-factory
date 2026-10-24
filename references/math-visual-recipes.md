@@ -39,7 +39,7 @@ dot.add_updater(lambda m: m.move_to(axes.c2p(x_tracker.get_value(), f(x_tracker.
 **Cơ chế trong ManimGL:**
 - Sử dụng trực tiếp `axes.get_riemann_rectangles(graph, x_range=[a, b], dx=...)`.
 - Chuyển tiếp mượt giữa các mức độ thô/mịn bằng `ReplacementTransform`.
-- Xem ví dụ hoàn chỉnh đã chạy được trong [`integral_tutorial.py`](../integral_tutorial.py).
+- Xem ví dụ hoàn chỉnh đã chạy được trong [`scenes/integral_tutorial.py`](../scenes/integral_tutorial.py).
 
 ---
 
@@ -85,8 +85,8 @@ class SurfaceOfRevolutionDemo(ThreeDScene):
 | Khái niệm | ManimCE (Tutorials cũ) | ManimGL (Chuẩn của dự án) |
 |---|---|---|
 | Import | `from manim import *` | `from manimlib import *` |
-| Text công thức | `MathTex(r"...")` | `Tex(r"...")` |
-| Text thường | `Text("...")` | `Text("...")` hoặc `TexText("...")` |
+| Text công thức | `MathTex(r"...")` | `Tex(r"...")` *(chỉ chứa ký hiệu toán/ASCII, không nhét tiếng Việt có dấu)* |
+| Text thường / Tiếng Việt | `Text("...")` | `Text("...", font="Segoe UI")` *(hoặc `self.make_body(...)` trong `ChannelScene`; tránh `TexText` cho tiếng Việt)* |
 | Vẽ hình | `Create(obj)` | `ShowCreation(obj)` |
 | Tự động cập nhật | `always_redraw(lambda: ...)` | `mob.add_updater(lambda m: ...)` |
 | Tọa độ trục | `axes.coords_to_point(x, y)` | `axes.c2p(x, y)` |

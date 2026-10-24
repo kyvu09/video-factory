@@ -19,17 +19,41 @@ if TYPE_CHECKING:
     from manimlib.typing import Vect3
 
 
+def _normalize_fade_args(
+    mobject: Mobject,
+    *args,
+    shift: np.ndarray | None = None,
+) -> tuple[Mobject, np.ndarray]:
+    from manimlib.mobject.mobject import Mobject as BaseMobject
+    from manimlib.mobject.types.vectorized_mobject import VGroup
+
+    extra_mobs = [a for a in args if isinstance(a, BaseMobject)]
+    non_mobs = [a for a in args if not isinstance(a, BaseMobject)]
+    shift_vect = shift if shift is not None else (non_mobs[0] if non_mobs else ORIGIN)
+    if extra_mobs:
+        all_mobs = [mobject, *extra_mobs]
+        if all(isinstance(m, VMobject) for m in all_mobs):
+            target_mob: Mobject = VGroup(*all_mobs)
+        else:
+            target_mob = Group(*all_mobs)
+    else:
+        target_mob = mobject
+    return target_mob, shift_vect
+
+
 class Fade(Transform):
     def __init__(
         self,
         mobject: Mobject,
-        shift: np.ndarray = ORIGIN,
+        *args,
+        shift: np.ndarray | None = None,
         scale: float = 1,
         **kwargs
     ):
-        self.shift_vect = shift
+        target_mob, shift_vect = _normalize_fade_args(mobject, *args, shift=shift)
+        self.shift_vect = shift_vect
         self.scale_factor = scale
-        super().__init__(mobject, **kwargs)
+        super().__init__(target_mob, **kwargs)
 
 
 class FadeIn(Fade):
@@ -48,13 +72,16 @@ class FadeOut(Fade):
     def __init__(
         self,
         mobject: Mobject,
-        shift: Vect3 = ORIGIN,
+        *args,
+        shift: Vect3 | None = None,
         remover: bool = True,
         final_alpha_value: float = 0.0,  # Put it back in original state when done,
         **kwargs
     ):
         super().__init__(
-            mobject, shift,
+            mobject,
+            *args,
+            shift=shift,
             remover=remover,
             final_alpha_value=final_alpha_value,
             **kwargs

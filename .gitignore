@@ -1,42 +1,106 @@
-# Python
+# ============================================================
+# 1. BẢO MẬT API KEYS, TOKENS & CẤU HÌNH CỤC BỘ (KHÔNG PUSH)
+# ============================================================
+.env
+.env.*
+!.env.example
+.ai_config.json
+.ai_config*.json
+secrets.json
+*secret*.json
+credentials.json
+*credentials*.json
+token.json
+.hf_token
+*.pem
+*.key
+
+# ============================================================
+# 2. DỮ LIỆU DỰ ÁN AI SINH TỰ ĐỘNG & MEDIA ĐẦU RA
+# ============================================================
+projects/*
+!projects/.gitkeep
+videos/*
+!videos/.gitkeep
+media/
+output/
+
+# Định dạng Video & Âm thanh (tránh đẩy file dung lượng lớn lên GitHub)
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.gif
+*.wav
+*.mp3
+*.ogg
+*.flac
+*.m4a
+
+# ============================================================
+# 3. TRỌNG SỐ MÔ HÌNH AI / TTS & BỘ NHỚ ĐỆM (CACHES)
+# ============================================================
+models/
+checkpoints/
+cache/
+.cache/
+latex_cache/
+tex_cache/
+*.onnx
+*.gguf
+*.pt
+*.pth
+*.safetensors
+*.bin
+
+# ============================================================
+# 4. FILE TẠM LATEX / MANIMGL & NHẬT KÝ CHẠY (LOGS)
+# ============================================================
+*.log
+*.aux
+*.dvi
+*.xdv
+*.fdb_latexmk
+*.fls
+*.synctex.gz
+mfput.log
+working*.tex
+*.tmp
+*.bak
+
+# ============================================================
+# 5. PYTHON, VIRTUAL ENVIRONMENTS & BUILD ARTIFACTS
+# ============================================================
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
 *.pyc
+*.so
 
-# Virtual environments
 .venv/
 venv/
 env/
-
-# uv
 .uv/
 
-# ManimGL / Manim output
-media/
-videos/*
-latex_cache/
-*.mp4
-*.mov
-*.avi
-*.log
-*.aux
-*.dvi
-*.fdb_latexmk
-*.fls
-*.synctex.gz
-mfput.log
+dist/
+build/
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
-# IDE / Editor
+# ============================================================
+# 6. IDE & HỆ ĐIỀU HÀNH
+# ============================================================
 .idea/
 .vscode/
+.cursor/
+.agent/
 *.swp
 *.swo
 .DS_Store
 Thumbs.db
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
+desktop.ini

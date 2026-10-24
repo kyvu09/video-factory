@@ -10,7 +10,6 @@ default:
     \usepackage{amssymb}
     \usepackage{dsfont}
     \usepackage{setspace}
-    \usepackage{tipa}
     \usepackage{relsize}
     \usepackage{textcomp}
     \usepackage{mathrsfs}
@@ -35,7 +34,6 @@ ctex:
     \usepackage{amssymb}
     \usepackage{dsfont}
     \usepackage{setspace}
-    \usepackage{tipa}
     \usepackage{relsize}
     \usepackage{textcomp}
     \usepackage{mathrsfs}

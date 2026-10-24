@@ -125,7 +125,7 @@ Last chunk introduces a new concept instead of synthesizing.
 Fix: Last chunk must reference chunk 1 visuals.
 
 **Anti: Wall of text**
-Long sentences as `TexText` objects.
+Long sentences crammed into a single `Text` line.
 Fix: Max 8 words per text object. Use multiple lines if needed.
 
 ---

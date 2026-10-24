@@ -25,11 +25,14 @@ class SurroundingRectangle(Rectangle):
         mobject: Mobject,
         buff: float = SMALL_BUFF,
         color: ManimColor = YELLOW,
+        corner_radius: float = 0.0,
         **kwargs
     ):
         super().__init__(color=color, **kwargs)
         self.buff = buff
         self.surround(mobject)
+        if corner_radius > 0:
+            self.round_corners(corner_radius)
         if mobject.is_fixed_in_frame():
             self.fix_in_frame()
 

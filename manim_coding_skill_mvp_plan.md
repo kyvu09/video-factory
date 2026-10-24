@@ -143,8 +143,8 @@ Nếu lệnh nào báo không tìm thấy, công cụ đó chưa được cài h
 Ví dụ dùng ổ C:
 
 ```powershell
-mkdir C:\personal_kyvu\CODE\video-factory
-cd C:\personal_kyvu\CODE\video-factory
+mkdir C:\workspace\video-factory
+cd C:\workspace\video-factory
 ```
 
 Bạn có thể thay đường dẫn theo vị trí lưu code hiện tại.
