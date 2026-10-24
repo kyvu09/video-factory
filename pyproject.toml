@@ -44,6 +44,7 @@ dependencies = [
 ]
 
 [project.scripts]
+video-factory = "gui:main"
 manimgl = "manimlib.__main__:main"
 manim-render = "manimlib.__main__:main"
 

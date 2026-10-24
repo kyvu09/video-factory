@@ -34,6 +34,7 @@ video-factory/
 ├── components/                 # Linh kiện hoạt họa tái sử dụng (StickmanTeacher, RightAngle)
 ├── scenes/                     # Thư viện các bài giảng mẫu (Integral, DP, Pythagoras...)
 ├── references/                 # Cẩm nang API ManimGL & System Prompt cho AI
+├── docs/                       # Tài liệu kế hoạch phát triển & kiến trúc triển khai
 ├── projects/                   # Thư mục lưu kịch bản/code AI sinh ra trên máy (Git ignored)
 ├── videos/                     # Thư mục chứa video MP4 xuất ra (Git ignored)
 ├── gui.py                      # Giao diện đồ họa Video Factory Studio
@@ -66,9 +67,9 @@ Bạn có thể chọn 1 trong 2 cách (cả `.env` và `.ai_config.json` đều
 
 ## 🎬 Khởi chạy Studio
 
-- **Trên Windows**: Click đúp vào **`run_gui.bat`** hoặc chạy:
+- **Trên Windows**: Click đúp vào **`run_gui.bat`**, hoặc mở bằng lệnh CLI trên mọi hệ điều hành:
   ```bash
-  .venv\Scripts\python.exe gui.py
+  uv run video-factory
   ```
 - **Render thủ công bằng CLI**:
   ```bash
